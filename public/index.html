@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Zaragoza Urban Brain 2026</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f7f6; color: #333; }
+        
+        header { 
+            background: #2c3e50; color: white; padding: 1rem 2rem; 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status-dot { height: 10px; width: 10px; background-color: #2ecc71; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #2ecc71; }
+
+        /* GRID DASHBOARD */
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 80px);
+            box-sizing: border-box;
+        }
+
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        .card h3 { margin-top: 0; color: #7f8c8d; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .big-value { font-size: 2.2rem; font-weight: bold; color: #2c3e50; margin: 10px 0; }
+        .sub-value { font-size: 0.9rem; color: #95a5a6; }
+
+        /* COLORES */
+        .good { color: #2ecc71; font-weight: bold; }
+        .mod { color: #f39c12; font-weight: bold; }
+        .bad { color: #e74c3c; font-weight: bold; }
+
+        /* MAPA */
+        #map { grid-column: 2; grid-row: 1 / span 2; border-radius: 12px; height: 100%; min-height: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1; }
+
+        /* LISTAS */
+        ul { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
+        li { padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; display: flex; align-items: center; }
+        .incident-badge { background: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: bold; min-width: 60px; text-align: center; }
+
+        /* LEYENDA DEL MAPA (Leaflet Control) */
+        .legend {
+            background: white;
+            padding: 10px 15px;
+            line-height: 1.5rem;
+            color: #555;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            font-size: 0.85rem;
+        }
+        .legend i {
+            width: 12px;
+            height: 12px;
+            float: left;
+            margin-right: 8px;
+            margin-top: 3px;
+            border-radius: 50%;
+        }
+        .legend-icon { display: inline-block; width: 12px; height: 12px; margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size: 1.5rem;">📡</span>
+        <div>
+            <h1 style="margin:0; font-size:1.2rem;">Zaragoza Contexto Urbano</h1>
+            <span style="font-size:0.8rem; opacity:0.8;">TFG Monitorización Integral 2026</span>
+        </div>
+    </div>
+    <div style="font-size: 0.9rem;"><span class="status-dot"></span>Online</div>
+</header>
+
+<div class="container">
+    
+    <div class="sidebar-left">
+        <div class="card">
+            <h3>🌤️ Meteorología</h3>
+            <div id="temp" class="big-value">-- °C</div>
+            <div id="weather-desc" class="sub-value">Cargando datos...</div>
+        </div>
+
+        <div class="card">
+            <h3>🍃 Calidad del Aire</h3>
+            <div class="big-value">PM2.5</div>
+            <div id="pm25" class="sub-value" style="font-size: 1.5rem; color: #333;">-- µg/m³</div>
+            <div id="aqi-text" style="margin-top:10px;">--</div>
+        </div>
+
+        <div class="card">
+            <h3>☢️ Radiación Solar</h3>
+            <div id="uv-index" class="big-value">UV --</div>
+            <div id="radiation" class="sub-value">-- W/m²</div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="sidebar-right">
+        <div class="card">
+            <h3>🅿️ Ocupación Parking</h3>
+            <div id="parking-occupancy" class="big-value">-- %</div>
+            <div class="sub-value">Ocupación Media (Centro)</div>
+        </div>
+
+        <div class="card">
+            <h3>🚲 Estado Bizi</h3>
+            <div id="bikes-total" class="big-value">--</div>
+            <div class="sub-value">Bicis disponibles en total</div>
+        </div>
+
+        <div class="card">
+            <h3>🚗 Tráfico (TomTom)</h3>
+            <ul id="traffic-list">
+                <li>Cargando incidencias...</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. INICIALIZAR MAPA
+    const map = L.map('map').setView([41.6488, -0.8891], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap, &copy; TomTom'
+    }).addTo(map);
+
+    // 2. AÑADIR LEYENDA (CONTROL PERSONALIZADO)
+    const legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function (map) {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.innerHTML += '<strong>Leyenda del Mapa</strong><br>';
+        div.innerHTML += '<i style="background: #e74c3c; border: 2px solid white; box-shadow: 0 0 2px black;"></i> Incidencia Tráfico<br>';
+        div.innerHTML += '<i style="background: #2ecc71"></i> Estación Bizi (Con bicis)<br>';
+        div.innerHTML += '<i style="background: #95a5a6"></i> Estación Bizi (Vacía)';
+        return div;
+    };
+    legend.addTo(map);
+
+    // 3. LOGICA DE DATOS
+    async function loadDashboard() {
+        
+        // A) CLIMA
+        try {
+            const res = await fetch('/api/weather/current');
+            const data = await res.json();
+            document.getElementById('temp').textContent = `${data.temperature} °C`;
+            document.getElementById('weather-desc').textContent = `${data.description} | Humedad: ${data.humidity}%`;
+        } catch(e) {}
+
+        // B) MEDIO AMBIENTE
+        try {
+            const res = await fetch('/api/environment/current');
+            const data = await res.json();
+            
+            // Aire
+            const pm25 = data.air_quality.pm2_5;
+            document.getElementById('pm25').textContent = `${pm25} µg/m³`;
+            const aqiText = document.getElementById('aqi-text');
+            
+            if(pm25 < 10) { aqiText.innerHTML = "<span class='good'>● Excelente</span>"; }
+            else if(pm25 < 25) { aqiText.innerHTML = "<span class='mod'>● Aceptable</span>"; }
+            else { aqiText.innerHTML = "<span class='bad'>● Mala Calidad</span>"; }
+
+            // Solar
+            document.getElementById('uv-index').textContent = `UV ${data.solar.uv_index.toFixed(1)}`;
+            document.getElementById('radiation').textContent = `${data.solar.shortwave_radiation} W/m²`;
+        } catch(e) {}
+
+        // C) PARKING
+        try {
+            const res = await fetch('/api/parking/current');
+            const data = await res.json();
+            const occ = data.average_occupancy;
+            const el = document.getElementById('parking-occupancy');
+            el.textContent = `${occ}%`;
+            el.className = `big-value ${occ > 85 ? 'bad' : (occ > 60 ? 'mod' : 'good')}`;
+        } catch(e) {}
+
+        // D) TRÁFICO (TOMTOM)
+        try {
+            const res = await fetch('/api/traffic/current');
+            const data = await res.json();
+            const list = document.getElementById('traffic-list');
+            list.innerHTML = '';
+
+            // Icono rojo para tráfico
+            const trafficIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: "<div style='background-color:#e74c3c; width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow:0 0 4px black;'></div>",
+                iconSize: [15, 15],
+                iconAnchor: [7, 7]
+            });
+
+            if (data.incidents && data.incidents.length > 0) {
+                data.incidents.forEach(inc => {
+                    // Lista
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="incident-badge">${inc.type}</span> ${inc.streetName}`;
+                    list.appendChild(li);
+
+                    // Mapa
+                    if (inc.coordinates) {
+                        L.marker([inc.coordinates[1], inc.coordinates[0]], {icon: trafficIcon})
+                         .bindPopup(`<b>🚗 ${inc.type}</b><br>${inc.description}<br>Severidad: ${inc.severity}`)
+                         .addTo(map);
+                    }
+                });
+            } else {
+                list.innerHTML = '<li>✅ Tráfico fluido en la zona</li>';
+            }
+        } catch(e) {
+            document.getElementById('traffic-list').innerHTML = '<li>⚠️ Cargando...</li>';
+        }
+
+        // E) BIZI (PUNTOS VERDES)
+        try {
+            const res = await fetch('/api/bizi/current');
+            const data = await res.json();
+            document.getElementById('bikes-total').textContent = data.total_bikes_available;
+
+            data.stations.forEach(st => {
+                const hasBikes = st.bikes_available > 0;
+                const color = hasBikes ? '#2ecc71' : '#95a5a6'; // Verde o Gris
+                const radius = hasBikes ? 5 : 3;
+
+                L.circleMarker([st.coordinates[1], st.coordinates[0]], {
+                    radius: radius, 
+                    color: color, 
+                    fillColor: color, 
+                    fillOpacity: 0.8,
+                    stroke: false
+                })
+                .bindPopup(`<b>🚲 Estación ${st.id}</b><br>${st.address}<br>Disponibles: ${st.bikes_available}`)
+                .addTo(map);
+            });
+        } catch(e) {}
+    }
+
+    loadDashboard();
+</script>
+
+</body>
+</html>

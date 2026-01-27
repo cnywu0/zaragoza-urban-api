@@ -1,44 +1,26 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    /* Configuración del Módulo */
+    "target": "ES2022",                  /* Versión de JS moderna compatible con Node 20+ */
+    "module": "commonjs",                /* Vital: Traduce imports a require */
+    "moduleResolution": "node",          /* Busca paquetes como lo hace Node */
+    
+    /* Interoperabilidad */
+    "esModuleInterop": true,             /* Permite: import express from 'express' */
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,           /* Permite importar archivos .json */
 
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
+    /* Reglas estrictas (Buenas para TFG) */
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    "noImplicitAny": true,
+    
+    /* LA SOLUCIÓN A TU ERROR */
+    "verbatimModuleSyntax": false,       /* Desactivamos la regla que te da error */
+    
+    /* Salida */
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

@@ -1,0 +1,17 @@
+# Dependencias (pesan mucho y se instalan solas)
+node_modules/
+
+# Archivos de entorno (SECRETOS)
+.env
+
+# Archivos de compilación (lo que genera TypeScript)
+dist/
+
+# Logs y archivos temporales
+*.log
+request_logs.json
+data_storage.json
+
+# Archivos de sistema (Mac/Windows)
+.DS_Store
+Thumbs.db
