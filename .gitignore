@@ -4,9 +4,6 @@ node_modules/
 # Archivos de entorno (SECRETOS)
 .env
 
-# Archivos de compilación (lo que genera TypeScript)
-dist/
-
 # Logs y archivos temporales
 *.log
 request_logs.json
