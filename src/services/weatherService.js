@@ -3,14 +3,10 @@ const { canFetch } = require('../utils/requestLimiter');
 require('dotenv').config();
 
 const fetchOpenWeather = async () => {
-    // Throttle: Evita pedir datos si ya pedimos hace poco
     if (!canFetch('OpenWeather')) return null;
 
     const API_KEY = process.env.OPENWEATHER_API_KEY;
-    if (!API_KEY) {
-        console.error('❌ Falta OPENWEATHER_API_KEY en .env');
-        return null;
-    }
+    if (!API_KEY) return console.error('❌ Falta OPENWEATHER_API_KEY');
 
     try {
         console.log('🌤️ Consultando OpenWeather...');
@@ -26,7 +22,7 @@ const fetchOpenWeather = async () => {
             temperature: data.main.temp,
             humidity: data.main.humidity,
             wind_speed: data.wind.speed,
-            description: data.weather[0].description, // "cielo claro", "lluvia ligera"
+            description: data.weather[0].description,
             timestamp: new Date()
         };
     } catch (error) {
@@ -36,19 +32,9 @@ const fetchOpenWeather = async () => {
 };
 
 const fetchAEMET = async () => {
-    // Si no hay clave de AEMET, ignoramos silenciosamente
-    if (!process.env.AEMET_API_KEY) return null;
+    // Placeholder para cumplir requisito TFG sin complicar código ahora
     if (!canFetch('AEMET')) return null;
-
-    try {
-        console.log('🇪🇸 Consultando AEMET (Validación)...');
-        // NOTA: AEMET requiere dos pasos (pedir URL -> descargar datos), 
-        // para el TFG, si OpenWeather funciona, esto es opcional.
-        // Devolvemos null por ahora para no complicar si no tienes la clave perfecta.
-        return null; 
-    } catch (error) {
-        return null;
-    }
+    return null; 
 };
 
 module.exports = { fetchOpenWeather, fetchAEMET };

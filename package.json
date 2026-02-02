@@ -2,7 +2,8 @@
   "name": "zaragoza-urban-api",
   "version": "1.0.0",
   "description": "API de contexto ambiental y urbano en tiempo real",
-  "main": "index.js",
+  "main": "src/app.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js --ignore data_storage.json --ignore request_logs.json"
@@ -11,10 +12,14 @@
     "type": "git",
     "url": "git+https://github.com/cnywu0/zaragoza-urban-api.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "zaragoza",
+    "smart-city",
+    "api",
+    "nodejs"
+  ],
+  "author": "Tu Nombre",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/cnywu0/zaragoza-urban-api/issues"
   },
@@ -24,13 +29,9 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "node-cron": "^4.2.1",
-    "pg": "^8.17.2"
+    "node-cron": "^4.2.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/node": "^25.0.10",
-    "@types/pg": "^8.16.0",
     "nodemon": "^3.1.11"
   }
 }

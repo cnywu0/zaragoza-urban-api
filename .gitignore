@@ -1,14 +1,19 @@
-# Dependencias (pesan mucho y se instalan solas)
+# --- Dependencias (Lo más importante) ---
 node_modules/
 
-# Archivos de entorno (SECRETOS)
+# --- Variables de Entorno (SEGURIDAD) ---
 .env
 
-# Logs y archivos temporales
-*.log
-request_logs.json
+# --- Archivos de Datos Locales (Para que no se suban los logs) ---
 data_storage.json
+request_logs.json
 
-# Archivos de sistema (Mac/Windows)
-.DS_Store
-Thumbs.db
+# --- Basura de Sistema Operativo ---
+Thumbs.db        # Windows
+.DS_Store        # Mac
+Desktop.ini      # Windows
+
+# --- Logs de errores de npm ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

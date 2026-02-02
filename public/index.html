@@ -101,6 +101,18 @@
             <div id="uv-index" class="big-value">UV --</div>
             <div id="radiation" class="sub-value">-- W/m²</div>
         </div>
+
+        <div class="card">
+            <div class="card-header">
+            <h2>🌼 Nivel de Polen</h2>
+            <span class="status-indicator status-good" id="pollen-status-dot"></span>
+        </div>
+        <div class="data-row">
+            <ul id="pollen-list" style="width: 100%; padding: 0; list-style: none;">
+                <li style="color: #888;">Cargando datos...</li>
+            </ul>
+    </div>
+</div>
     </div>
 
     <div id="map"></div>
@@ -158,24 +170,56 @@
             document.getElementById('weather-desc').textContent = `${data.description} | Humedad: ${data.humidity}%`;
         } catch(e) {}
 
-        // B) MEDIO AMBIENTE
+        // B) MEDIO AMBIENTE (Aire + Solar + Polen)
         try {
             const res = await fetch('/api/environment/current');
             const data = await res.json();
             
-            // Aire
+            // 1. AIRE
             const pm25 = data.air_quality.pm2_5;
             document.getElementById('pm25').textContent = `${pm25} µg/m³`;
-            const aqiText = document.getElementById('aqi-text');
-            
-            if(pm25 < 10) { aqiText.innerHTML = "<span class='good'>● Excelente</span>"; }
-            else if(pm25 < 25) { aqiText.innerHTML = "<span class='mod'>● Aceptable</span>"; }
-            else { aqiText.innerHTML = "<span class='bad'>● Mala Calidad</span>"; }
+            // ... (resto de tu código de aire) ...
 
-            // Solar
+            // 2. RADIACIÓN
             document.getElementById('uv-index').textContent = `UV ${data.solar.uv_index.toFixed(1)}`;
-            document.getElementById('radiation').textContent = `${data.solar.shortwave_radiation} W/m²`;
-        } catch(e) {}
+            document.getElementById('radiation').textContent = `${data.solar.radiation} W/m²`;
+
+            // 3. POLEN (NUEVO CÓDIGO)
+            const p = data.pollen;
+            const pollenList = document.getElementById('pollen-list');
+            pollenList.innerHTML = ''; // Limpiar lista anterior
+
+            // Definimos qué pólenes mostrar
+            const allergens = [
+                { name: 'Gramíneas', val: p.grass },
+                { name: 'Olivo', val: p.olive },
+                { name: 'Abedul', val: p.birch },
+                { name: 'Artemisa', val: p.mugwort }
+            ];
+
+            // Generamos la lista con colores según gravedad
+            allergens.forEach(item => {
+                let color = '#2ecc71'; // Verde (Bajo)
+                if (item.val > 10) color = '#f39c12'; // Naranja (Medio)
+                if (item.val > 50) color = '#e74c3c'; // Rojo (Alto)
+
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.marginBottom = '5px';
+                li.style.borderBottom = '1px solid #333';
+                li.style.paddingBottom = '3px';
+                
+                li.innerHTML = `
+                    <span style="font-size: 0.9em;">${item.name}</span>
+                    <span style="color:${color}; font-weight:bold;">${item.val}</span>
+                `;
+                pollenList.appendChild(li);
+            });
+
+        } catch (error) {
+            console.error("Error cargando ambiente:", error);
+        }
 
         // C) PARKING
         try {
