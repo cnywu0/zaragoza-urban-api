@@ -85,7 +85,6 @@ El sistema utiliza un dashboard interactivo con mapa georreferenciado, actualiza
 ## 📸 Capturas de Pantalla
 
 ### Dashboard Principal
-> _[AÑADIR AQUÍ: Captura de pantalla del dashboard completo]_
 
 ![Dashboard Principal](./docs/images/dashboard-main.png)
 
@@ -97,9 +96,8 @@ El sistema utiliza un dashboard interactivo con mapa georreferenciado, actualiza
 ---
 
 ### Mapa Interactivo
-> _[AÑADIR AQUÍ: Captura del mapa con marcadores]_
 
-![Mapa Interactivo](./docs/images/map-view.png)
+![Mapa Interactivo](./public/images/map-view.png)
 
 **Elementos del mapa:**
 - 🔴 Incidencias de tráfico (rojo)
@@ -110,21 +108,13 @@ El sistema utiliza un dashboard interactivo con mapa georreferenciado, actualiza
 ---
 
 ### Sección de Análisis
-> _[AÑADIR AQUÍ: Captura del panel de análisis]_
 
-![Análisis Urbano](./docs/images/analytics-panel.png)
+![Análisis Urbano](./public/images/analytics-panel.png)
 
 **Análisis mostrado:**
 - Detección de anomalías en PM2.5
 - Correlación clima/bicicletas
 - Estado de alerta visual
-
----
-
-### Vista Móvil
-> _[AÑADIR AQUÍ: Capturas en dispositivo móvil]_
-
-![Vista Móvil](./docs/images/mobile-view.png)
 
 ---
 
@@ -865,7 +855,7 @@ Ya está solucionado en el código con `maxNativeZoom: 16`. Si persiste:
 Este proyecto está bajo la Licencia **ISC**.
 
 ```
-Copyright (c) 2025 [Tu Nombre]
+Copyright (c) 2025 [Nicolas Blasco]
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -878,11 +868,11 @@ Ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 📧 Contacto
 
-**Desarrollador:** Tu Nombre
+**Desarrollador:** cnywu0
 
 - 🐙 GitHub: [@cnywu0](https://github.com/cnywu0)
-- 📧 Email: tu-email@ejemplo.com
-- 🌐 Web: [tu-portfolio.com](https://tu-portfolio.com)
+- 📧 Email: nicolaslol22@gmail.com
+- 🌐 Web: [nblascodev.vercel.app](https://nblascodev.vercel.app/)
 
 **Proyecto:** [github.com/cnywu0/zaragoza-urban-api](https://github.com/cnywu0/zaragoza-urban-api)
 
@@ -947,7 +937,7 @@ npm run dev     # Inicia con nodemon (auto-reload)
 
 **⭐ Si te ha gustado este proyecto, dale una estrella en GitHub ⭐**
 
-Hecho con ❤️ por [Tu Nombre](https://github.com/cnywu0)
+Hecho con ❤️ por [Nicolas Blasco](https://github.com/cnywu0)
 
 [⬆ Volver arriba](#-zaragoza-urban-brain)
 
