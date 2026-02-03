@@ -46,7 +46,7 @@
         li { padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; display: flex; align-items: center; }
         .incident-badge { background: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: bold; min-width: 60px; text-align: center; }
 
-        /* LEYENDA DEL MAPA (Leaflet Control) */
+        /* LEYENDA DEL MAPA */
         .legend {
             background: white;
             padding: 10px 15px;
@@ -64,7 +64,6 @@
             margin-top: 3px;
             border-radius: 50%;
         }
-        .legend-icon { display: inline-block; width: 12px; height: 12px; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -104,15 +103,15 @@
 
         <div class="card">
             <div class="card-header">
-            <h2>🌼 Nivel de Polen</h2>
-            <span class="status-indicator status-good" id="pollen-status-dot"></span>
+                <h3>🌼 Nivel de Polen</h3>
+                <span class="status-indicator status-good" id="pollen-status-dot"></span>
+            </div>
+            <div class="data-row">
+                <ul id="pollen-list" style="width: 100%; padding: 0; list-style: none;">
+                    <li style="color: #888;">Cargando datos...</li>
+                </ul>
+            </div>
         </div>
-        <div class="data-row">
-            <ul id="pollen-list" style="width: 100%; padding: 0; list-style: none;">
-                <li style="color: #888;">Cargando datos...</li>
-            </ul>
-    </div>
-</div>
     </div>
 
     <div id="map"></div>
@@ -143,16 +142,17 @@
     // 1. INICIALIZAR MAPA
     const map = L.map('map').setView([41.6488, -0.8891], 13);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap, &copy; TomTom'
+        attribution: '&copy; OpenStreetMap, &copy; TomTom, &copy; Ayto Zaragoza'
     }).addTo(map);
 
-    // 2. AÑADIR LEYENDA (CONTROL PERSONALIZADO)
+    // 2. AÑADIR LEYENDA ACTUALIZADA
     const legend = L.control({ position: 'bottomright' });
 
     legend.onAdd = function (map) {
         const div = L.DomUtil.create('div', 'info legend');
         div.innerHTML += '<strong>Leyenda del Mapa</strong><br>';
         div.innerHTML += '<i style="background: #e74c3c; border: 2px solid white; box-shadow: 0 0 2px black;"></i> Incidencia Tráfico<br>';
+        div.innerHTML += '<i style="background: #f1c40f; border: 2px solid black;"></i> Obras en Vía<br>'; // NUEVO ICONO
         div.innerHTML += '<i style="background: #2ecc71"></i> Estación Bizi (Con bicis)<br>';
         div.innerHTML += '<i style="background: #95a5a6"></i> Estación Bizi (Vacía)';
         return div;
@@ -175,21 +175,19 @@
             const res = await fetch('/api/environment/current');
             const data = await res.json();
             
-            // 1. AIRE
+            // Aire
             const pm25 = data.air_quality.pm2_5;
             document.getElementById('pm25').textContent = `${pm25} µg/m³`;
-            // ... (resto de tu código de aire) ...
-
-            // 2. RADIACIÓN
+            
+            // Radiación
             document.getElementById('uv-index').textContent = `UV ${data.solar.uv_index.toFixed(1)}`;
             document.getElementById('radiation').textContent = `${data.solar.radiation} W/m²`;
 
-            // 3. POLEN (NUEVO CÓDIGO)
+            // Polen
             const p = data.pollen;
             const pollenList = document.getElementById('pollen-list');
-            pollenList.innerHTML = ''; // Limpiar lista anterior
+            pollenList.innerHTML = ''; 
 
-            // Definimos qué pólenes mostrar
             const allergens = [
                 { name: 'Gramíneas', val: p.grass },
                 { name: 'Olivo', val: p.olive },
@@ -197,11 +195,10 @@
                 { name: 'Artemisa', val: p.mugwort }
             ];
 
-            // Generamos la lista con colores según gravedad
             allergens.forEach(item => {
-                let color = '#2ecc71'; // Verde (Bajo)
-                if (item.val > 10) color = '#f39c12'; // Naranja (Medio)
-                if (item.val > 50) color = '#e74c3c'; // Rojo (Alto)
+                let color = '#2ecc71'; 
+                if (item.val > 10) color = '#f39c12';
+                if (item.val > 50) color = '#e74c3c';
 
                 const li = document.createElement('li');
                 li.style.display = 'flex';
@@ -216,10 +213,7 @@
                 `;
                 pollenList.appendChild(li);
             });
-
-        } catch (error) {
-            console.error("Error cargando ambiente:", error);
-        }
+        } catch (e) {}
 
         // C) PARKING
         try {
@@ -238,7 +232,6 @@
             const list = document.getElementById('traffic-list');
             list.innerHTML = '';
 
-            // Icono rojo para tráfico
             const trafficIcon = L.divIcon({
                 className: 'custom-div-icon',
                 html: "<div style='background-color:#e74c3c; width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow:0 0 4px black;'></div>",
@@ -248,16 +241,14 @@
 
             if (data.incidents && data.incidents.length > 0) {
                 data.incidents.forEach(inc => {
-                    // Lista
                     const li = document.createElement('li');
                     li.innerHTML = `<span class="incident-badge">${inc.type}</span> ${inc.streetName}`;
                     list.appendChild(li);
 
-                    // Mapa
                     if (inc.coordinates) {
                         L.marker([inc.coordinates[1], inc.coordinates[0]], {icon: trafficIcon})
-                         .bindPopup(`<b>🚗 ${inc.type}</b><br>${inc.description}<br>Severidad: ${inc.severity}`)
-                         .addTo(map);
+                          .bindPopup(`<b>🚗 ${inc.type}</b><br>${inc.description}<br>Severidad: ${inc.severity}`)
+                          .addTo(map);
                     }
                 });
             } else {
@@ -267,7 +258,7 @@
             document.getElementById('traffic-list').innerHTML = '<li>⚠️ Cargando...</li>';
         }
 
-        // E) BIZI (PUNTOS VERDES)
+        // E) BIZI
         try {
             const res = await fetch('/api/bizi/current');
             const data = await res.json();
@@ -275,7 +266,7 @@
 
             data.stations.forEach(st => {
                 const hasBikes = st.bikes_available > 0;
-                const color = hasBikes ? '#2ecc71' : '#95a5a6'; // Verde o Gris
+                const color = hasBikes ? '#2ecc71' : '#95a5a6';
                 const radius = hasBikes ? 5 : 3;
 
                 L.circleMarker([st.coordinates[1], st.coordinates[0]], {
@@ -288,6 +279,32 @@
                 .bindPopup(`<b>🚲 Estación ${st.id}</b><br>${st.address}<br>Disponibles: ${st.bikes_available}`)
                 .addTo(map);
             });
+        } catch(e) {}
+
+        // F) OBRAS (NUEVO BLOQUE) 🚧
+        try {
+            const res = await fetch('/api/works/current');
+            const data = await res.json();
+            
+            // Icono de Obra (Triángulo Amarillo)
+            const workIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: "<div style='display:flex;justify-content:center;align-items:center;background:#f1c40f;width:20px;height:20px;border-radius:4px;border:2px solid black;font-size:12px;'>🚧</div>",
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            if (data.works) {
+                data.works.forEach(w => {
+                    // Leaflet usa [Lat, Lon]. La API ya nos dio [Lon, Lat] limpios en el backend.
+                    // Solo invertimos para Leaflet.
+                    if (w.coordinates && w.coordinates.length === 2) {
+                        L.marker([w.coordinates[1], w.coordinates[0]], {icon: workIcon})
+                        .bindPopup(`<b>🚧 ${w.title}</b><br><small>${w.description}</small><br><a href="${w.link}" target="_blank">Más info</a>`)
+                        .addTo(map);
+                    }
+                });
+            }
         } catch(e) {}
     }
 

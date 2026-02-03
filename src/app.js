@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// DB Helpers locales para los endpoints
+// Helpers DB
 const DB_FILE = path.join(__dirname, '../data_storage.json');
 const readDB = () => {
     if (!fs.existsSync(DB_FILE)) return [];
@@ -25,10 +25,10 @@ const getLatest = (src) => {
     return data.length ? data[data.length - 1] : null;
 };
 
-// --- ENDPOINTS ---
+// --- ENDPOINTS DASHBOARD ---
 
 app.get('/api/weather/current', (req, res) => {
-    const data = readDB().filter(d => d.source === 'OpenWeather').pop();
+    const data = getLatest('OpenWeather');
     data ? res.json(data) : res.status(404).json({error: "Cargando..."});
 });
 
@@ -52,12 +52,18 @@ app.get('/api/parking/current', (req, res) => {
     data ? res.json(data) : res.status(404).json({error: "Cargando..."});
 });
 
-// Analytics
+// 👇 NUEVO ENDPOINT DE OBRAS
+app.get('/api/works/current', (req, res) => {
+    const data = getLatest('ZaragozaWorks');
+    data ? res.json(data) : res.status(404).json({error: "Cargando..."});
+});
+
+// --- ENDPOINTS INTELLIGENCE ---
 app.get('/api/analytics/correlation', (req, res) => res.json(getWeatherBikeCorrelation()));
 app.get('/api/analytics/anomaly', (req, res) => res.json(getAirQualityAnomaly()));
 
 // --- ARRANQUE ---
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor listo en: http://localhost:${PORT}`);
-    initCron();
+    console.log(`🚀 Servidor Web escuchando en: http://localhost:${PORT}`);
+    initCron(); 
 });
