@@ -1,47 +1,33 @@
 const cron = require('node-cron');
-const { saveToJSON } = require('../utils/jsonDB');
-
-// Importamos todos los servicios
-const { fetchOpenWeather, fetchAEMET } = require('../services/weatherService');
-const { fetchTraffic } = require('../services/trafficService');
-const { fetchBizi } = require('../services/biziService');
-const { fetchEnvironment } = require('../services/environmentService');
-const { fetchParking } = require('../services/parkingService');
-const { fetchWorks } = require('../services/worksService'); // <--- NUEVO IMPORT
+const db = require('../utils/db');
+const weather = require('../services/weatherService');
+const traffic = require('../services/trafficService');
+const bizi = require('../services/biziService');
+const env = require('../services/environmentService');
+const parking = require('../services/parkingService');
+const works = require('../services/worksService');
 
 const runTask = async () => {
-    console.log(`⚡ [CRON] Ejecutando recolección: ${new Date().toLocaleTimeString()}`);
-    
+    console.log(`⚡ [CRON] Recolectando... ${new Date().toLocaleTimeString()}`);
     try {
-        // Ejecutamos todo en paralelo
-        const [ow, aemet, traffic, bizi, env, park, works] = await Promise.all([
-            fetchOpenWeather(),
-            fetchAEMET(),
-            fetchTraffic(),
-            fetchBizi(),
-            fetchEnvironment(),
-            fetchParking(),
-            fetchWorks() // <--- NUEVA LLAMADA
+        const [ow, tr, bz, en, pk, wk] = await Promise.all([
+            weather.fetchOpenWeather(), traffic.fetchTraffic(), bizi.fetchBizi(),
+            env.fetchEnvironment(), parking.fetchParking(), works.fetchWorks()
         ]);
 
-        // Guardamos lo que haya llegado
-        if (ow) saveToJSON(ow);
-        if (aemet) saveToJSON(aemet);
-        if (traffic) saveToJSON(traffic);
-        if (bizi) saveToJSON(bizi);
-        if (env) saveToJSON(env);
-        if (park) saveToJSON(park);
-        if (works) saveToJSON(works); // <--- NUEVO GUARDADO
+        if (ow) await db.saveWeather(ow);
+        if (tr) await db.saveTraffic(tr);
+        if (bz) await db.saveBizi(bz);
+        if (en) await db.saveEnvironment(en);
+        if (pk) await db.saveParking(pk);
+        if (wk) await db.saveWorks(wk);
         
-    } catch (error) {
-        console.error("❌ Error crítico en el Job:", error);
-    }
+    } catch (error) { console.error("❌ Error Cron:", error); }
 };
 
 const initCron = () => {
-    console.log('🕰️ Job de recolección iniciado (Cada 15 min).');
+    console.log('🕰️ Cronjob DB iniciado.');
     cron.schedule('*/15 * * * *', runTask);
     runTask();
 };
-
 module.exports = { initCron };

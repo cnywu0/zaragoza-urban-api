@@ -2,314 +2,100 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Zaragoza Urban Brain 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaragoza Urban Brain</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f7f6; color: #333; }
-        
-        header { 
-            background: #2c3e50; color: white; padding: 1rem 2rem; 
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .status-dot { height: 10px; width: 10px; background-color: #2ecc71; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #2ecc71; }
-
-        /* GRID DASHBOARD */
-        .container {
-            display: grid;
-            grid-template-columns: 300px 1fr 300px;
-            grid-template-rows: auto 1fr;
-            gap: 20px;
-            padding: 20px;
-            height: calc(100vh - 80px);
-            box-sizing: border-box;
-        }
-
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
-        .card h3 { margin-top: 0; color: #7f8c8d; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-        .big-value { font-size: 2.2rem; font-weight: bold; color: #2c3e50; margin: 10px 0; }
-        .sub-value { font-size: 0.9rem; color: #95a5a6; }
-
-        /* COLORES */
-        .good { color: #2ecc71; font-weight: bold; }
-        .mod { color: #f39c12; font-weight: bold; }
-        .bad { color: #e74c3c; font-weight: bold; }
-
-        /* MAPA */
-        #map { grid-column: 2; grid-row: 1 / span 2; border-radius: 12px; height: 100%; min-height: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1; }
-
-        /* LISTAS */
-        ul { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
-        li { padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; display: flex; align-items: center; }
-        .incident-badge { background: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: bold; min-width: 60px; text-align: center; }
-
-        /* LEYENDA DEL MAPA */
-        .legend {
-            background: white;
-            padding: 10px 15px;
-            line-height: 1.5rem;
-            color: #555;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            font-size: 0.85rem;
-        }
-        .legend i {
-            width: 12px;
-            height: 12px;
-            float: left;
-            margin-right: 8px;
-            margin-top: 3px;
-            border-radius: 50%;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<header>
-    <div style="display:flex; align-items:center; gap:10px;">
-        <span style="font-size: 1.5rem;">📡</span>
-        <div>
-            <h1 style="margin:0; font-size:1.2rem;">Zaragoza Contexto Urbano</h1>
-            <span style="font-size:0.8rem; opacity:0.8;">TFG Monitorización Integral 2026</span>
-        </div>
-    </div>
-    <div style="font-size: 0.9rem;"><span class="status-dot"></span>Online</div>
-</header>
-
-<div class="container">
-    
-    <div class="sidebar-left">
-        <div class="card">
-            <h3>🌤️ Meteorología</h3>
-            <div id="temp" class="big-value">-- °C</div>
-            <div id="weather-desc" class="sub-value">Cargando datos...</div>
-        </div>
-
-        <div class="card">
-            <h3>🍃 Calidad del Aire</h3>
-            <div class="big-value">PM2.5</div>
-            <div id="pm25" class="sub-value" style="font-size: 1.5rem; color: #333;">-- µg/m³</div>
-            <div id="aqi-text" style="margin-top:10px;">--</div>
-        </div>
-
-        <div class="card">
-            <h3>☢️ Radiación Solar</h3>
-            <div id="uv-index" class="big-value">UV --</div>
-            <div id="radiation" class="sub-value">-- W/m²</div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h3>🌼 Nivel de Polen</h3>
-                <span class="status-indicator status-good" id="pollen-status-dot"></span>
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">📡</div>
+            <div>
+                <h1>Zaragoza Urban Brain</h1>
+                <span class="subtitle">Monitorización Integral Urbana</span>
             </div>
-            <div class="data-row">
-                <ul id="pollen-list" style="width: 100%; padding: 0; list-style: none;">
-                    <li style="color: #888;">Cargando datos...</li>
+        </div>
+        <div class="status-badge">
+            <span class="status-dot"></span> Online
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <aside class="sidebar-left">
+            <div class="card weather-card">
+                <h3>🌤️ Meteorología</h3>
+                <div id="temp" class="value-huge">--°</div>
+                <div id="weather-desc" class="value-sub">Sincronizando...</div>
+            </div>
+
+            <div class="card">
+                <h3>🍃 Calidad del Aire</h3>
+                <div class="data-row">
+                    <span>PM2.5</span>
+                    <span id="pm25" class="value-highlight">--</span>
+                </div>
+                <div class="data-row">
+                    <span>Radiación</span>
+                    <span id="radiation" class="value-highlight">-- W/m²</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🌼 Polen</h3>
+                <ul id="pollen-list" class="scrolling-list">
+                    <li class="loading-text">Cargando sensores...</li>
                 </ul>
             </div>
-        </div>
-    </div>
+        </aside>
 
-    <div id="map"></div>
+        <main id="map-container">
+            <div id="map"></div>
+        </main>
 
-    <div class="sidebar-right">
-        <div class="card">
-            <h3>🅿️ Ocupación Parking</h3>
-            <div id="parking-occupancy" class="big-value">-- %</div>
-            <div class="sub-value">Ocupación Media (Centro)</div>
-        </div>
-
-        <div class="card">
-            <h3>🚲 Estado Bizi</h3>
-            <div id="bikes-total" class="big-value">--</div>
-            <div class="sub-value">Bicis disponibles en total</div>
-        </div>
-
-        <div class="card">
-            <h3>🚗 Tráfico (TomTom)</h3>
-            <ul id="traffic-list">
-                <li>Cargando incidencias...</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<script>
-    // 1. INICIALIZAR MAPA
-    const map = L.map('map').setView([41.6488, -0.8891], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap, &copy; TomTom, &copy; Ayto Zaragoza'
-    }).addTo(map);
-
-    // 2. AÑADIR LEYENDA ACTUALIZADA
-    const legend = L.control({ position: 'bottomright' });
-
-    legend.onAdd = function (map) {
-        const div = L.DomUtil.create('div', 'info legend');
-        div.innerHTML += '<strong>Leyenda del Mapa</strong><br>';
-        div.innerHTML += '<i style="background: #e74c3c; border: 2px solid white; box-shadow: 0 0 2px black;"></i> Incidencia Tráfico<br>';
-        div.innerHTML += '<i style="background: #f1c40f; border: 2px solid black;"></i> Obras en Vía<br>'; // NUEVO ICONO
-        div.innerHTML += '<i style="background: #2ecc71"></i> Estación Bizi (Con bicis)<br>';
-        div.innerHTML += '<i style="background: #95a5a6"></i> Estación Bizi (Vacía)';
-        return div;
-    };
-    legend.addTo(map);
-
-    // 3. LOGICA DE DATOS
-    async function loadDashboard() {
-        
-        // A) CLIMA
-        try {
-            const res = await fetch('/api/weather/current');
-            const data = await res.json();
-            document.getElementById('temp').textContent = `${data.temperature} °C`;
-            document.getElementById('weather-desc').textContent = `${data.description} | Humedad: ${data.humidity}%`;
-        } catch(e) {}
-
-        // B) MEDIO AMBIENTE (Aire + Solar + Polen)
-        try {
-            const res = await fetch('/api/environment/current');
-            const data = await res.json();
+        <aside class="sidebar-right">
             
-            // Aire
-            const pm25 = data.air_quality.pm2_5;
-            document.getElementById('pm25').textContent = `${pm25} µg/m³`;
-            
-            // Radiación
-            document.getElementById('uv-index').textContent = `UV ${data.solar.uv_index.toFixed(1)}`;
-            document.getElementById('radiation').textContent = `${data.solar.radiation} W/m²`;
-
-            // Polen
-            const p = data.pollen;
-            const pollenList = document.getElementById('pollen-list');
-            pollenList.innerHTML = ''; 
-
-            const allergens = [
-                { name: 'Gramíneas', val: p.grass },
-                { name: 'Olivo', val: p.olive },
-                { name: 'Abedul', val: p.birch },
-                { name: 'Artemisa', val: p.mugwort }
-            ];
-
-            allergens.forEach(item => {
-                let color = '#2ecc71'; 
-                if (item.val > 10) color = '#f39c12';
-                if (item.val > 50) color = '#e74c3c';
-
-                const li = document.createElement('li');
-                li.style.display = 'flex';
-                li.style.justifyContent = 'space-between';
-                li.style.marginBottom = '5px';
-                li.style.borderBottom = '1px solid #333';
-                li.style.paddingBottom = '3px';
+            <div class="card ai-card">
+                <div class="ai-header">
+                    <h3>🧠 Análisis Urbano</h3>
+                </div>
                 
-                li.innerHTML = `
-                    <span style="font-size: 0.9em;">${item.name}</span>
-                    <span style="color:${color}; font-weight:bold;">${item.val}</span>
-                `;
-                pollenList.appendChild(li);
-            });
-        } catch (e) {}
+                <div class="ai-insight">
+                    <label>Anomalía Aire</label>
+                    <div id="anomaly-status" class="ai-text">Calculando...</div>
+                </div>
+                
+                <div class="ai-insight">
+                    <label>Patrón Bici/Clima</label>
+                    <div id="correlation-text" class="ai-text">Procesando histórico...</div>
+                </div>
+            </div>
 
-        // C) PARKING
-        try {
-            const res = await fetch('/api/parking/current');
-            const data = await res.json();
-            const occ = data.average_occupancy;
-            const el = document.getElementById('parking-occupancy');
-            el.textContent = `${occ}%`;
-            el.className = `big-value ${occ > 85 ? 'bad' : (occ > 60 ? 'mod' : 'good')}`;
-        } catch(e) {}
+            <div class="card">
+                <h3>🅿️ Parking (Centro)</h3>
+                <div id="parking-occupancy" class="value-large">--%</div>
+                <div class="value-sub">Ocupación estimada</div>
+            </div>
 
-        // D) TRÁFICO (TOMTOM)
-        try {
-            const res = await fetch('/api/traffic/current');
-            const data = await res.json();
-            const list = document.getElementById('traffic-list');
-            list.innerHTML = '';
+            <div class="card">
+                <h3>🚲 Bizi Disponibles</h3>
+                <div id="bikes-total" class="value-large">--</div>
+                <div class="value-sub">Bicicletas libres</div>
+            </div>
 
-            const trafficIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: "<div style='background-color:#e74c3c; width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow:0 0 4px black;'></div>",
-                iconSize: [15, 15],
-                iconAnchor: [7, 7]
-            });
+            <div class="card">
+                <h3>🚗 Tráfico Tiempo Real</h3>
+                <ul id="traffic-list" class="scrolling-list">
+                    <li class="loading-text">Escaneando red viaria...</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
 
-            if (data.incidents && data.incidents.length > 0) {
-                data.incidents.forEach(inc => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span class="incident-badge">${inc.type}</span> ${inc.streetName}`;
-                    list.appendChild(li);
-
-                    if (inc.coordinates) {
-                        L.marker([inc.coordinates[1], inc.coordinates[0]], {icon: trafficIcon})
-                          .bindPopup(`<b>🚗 ${inc.type}</b><br>${inc.description}<br>Severidad: ${inc.severity}`)
-                          .addTo(map);
-                    }
-                });
-            } else {
-                list.innerHTML = '<li>✅ Tráfico fluido en la zona</li>';
-            }
-        } catch(e) {
-            document.getElementById('traffic-list').innerHTML = '<li>⚠️ Cargando...</li>';
-        }
-
-        // E) BIZI
-        try {
-            const res = await fetch('/api/bizi/current');
-            const data = await res.json();
-            document.getElementById('bikes-total').textContent = data.total_bikes_available;
-
-            data.stations.forEach(st => {
-                const hasBikes = st.bikes_available > 0;
-                const color = hasBikes ? '#2ecc71' : '#95a5a6';
-                const radius = hasBikes ? 5 : 3;
-
-                L.circleMarker([st.coordinates[1], st.coordinates[0]], {
-                    radius: radius, 
-                    color: color, 
-                    fillColor: color, 
-                    fillOpacity: 0.8,
-                    stroke: false
-                })
-                .bindPopup(`<b>🚲 Estación ${st.id}</b><br>${st.address}<br>Disponibles: ${st.bikes_available}`)
-                .addTo(map);
-            });
-        } catch(e) {}
-
-        // F) OBRAS (NUEVO BLOQUE) 🚧
-        try {
-            const res = await fetch('/api/works/current');
-            const data = await res.json();
-            
-            // Icono de Obra (Triángulo Amarillo)
-            const workIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: "<div style='display:flex;justify-content:center;align-items:center;background:#f1c40f;width:20px;height:20px;border-radius:4px;border:2px solid black;font-size:12px;'>🚧</div>",
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-
-            if (data.works) {
-                data.works.forEach(w => {
-                    // Leaflet usa [Lat, Lon]. La API ya nos dio [Lon, Lat] limpios en el backend.
-                    // Solo invertimos para Leaflet.
-                    if (w.coordinates && w.coordinates.length === 2) {
-                        L.marker([w.coordinates[1], w.coordinates[0]], {icon: workIcon})
-                        .bindPopup(`<b>🚧 ${w.title}</b><br><small>${w.description}</small><br><a href="${w.link}" target="_blank">Más info</a>`)
-                        .addTo(map);
-                    }
-                });
-            }
-        } catch(e) {}
-    }
-
-    loadDashboard();
-</script>
-
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

@@ -4,35 +4,22 @@ require('dotenv').config();
 
 const fetchTraffic = async () => {
     if (!canFetch('TomTomTraffic')) return null;
-
-    const API_KEY = process.env.TOMTOM_API_KEY;
-    if (!API_KEY) return console.error('❌ Falta TOMTOM_API_KEY');
-
     try {
-        console.log('🚗 Consultando TomTom Traffic...');
-        const BBOX = '-0.975,41.605,-0.800,41.700'; // Zaragoza Box
-        const url = `https://api.tomtom.com/traffic/services/5/incidentDetails?key=${API_KEY}&bbox=${BBOX}&fields={incidents{type,geometry{type,coordinates},properties{iconCategory,magnitudeOfDelay,events{description},from,to}}}`;
-        
-        const response = await axios.get(url);
-        if (!response.data || !response.data.incidents) return null;
+        console.log('🚗 Consultando TomTom...');
+        const url = `https://api.tomtom.com/traffic/services/5/incidentDetails?key=${process.env.TOMTOM_API_KEY}&bbox=-0.975,41.605,-0.800,41.700&fields={incidents{type,geometry{type,coordinates},properties{iconCategory,magnitudeOfDelay,events{description},from,to}}}`;
+        const res = await axios.get(url);
+        if(!res.data.incidents) return null;
 
-        const incidents = response.data.incidents.map((item) => ({
-            type: item.properties.iconCategory === 6 ? "Incidencia" : "Tráfico",
-            description: item.properties.events ? item.properties.events[0].description : "Retención",
-            coordinates: item.geometry.coordinates[0]
+        const incidents = res.data.incidents.map(i => ({
+            streetName: `${i.properties.from || 'Zaragoza'} -> ${i.properties.to || 'Zaragoza'}`,
+            type: "Incidencia",
+            description: i.properties.events ? i.properties.events[0].description : "Retención",
+            severity: i.properties.magnitudeOfDelay > 2 ? "Grave" : "Leve",
+            coordinates: i.geometry.coordinates[0]
         }));
-
+        
         console.log(`   ✅ TomTom: ${incidents.length} incidencias.`);
-        return {
-            source: 'TomTomTraffic',
-            timestamp: new Date(),
-            total_incidents: incidents.length,
-            incidents: incidents
-        };
-    } catch (error) {
-        console.error('❌ Error TomTom:', error.message);
-        return null;
-    }
+        return { source: 'TomTomTraffic', total_incidents: incidents.length, incidents: incidents, timestamp: new Date() };
+    } catch (e) { console.error('Error TomTom:', e.message); return null; }
 };
-
 module.exports = { fetchTraffic };

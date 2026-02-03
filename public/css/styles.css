@@ -1,0 +1,150 @@
+:root {
+    /* Paleta Gemini Dark */
+    --bg-body: #131314;
+    --bg-card: #1e1f20;
+    --bg-header: #1e1f20;
+    --text-primary: #e3e3e3;
+    --text-secondary: #a8a8a8;
+    --accent-blue: #a8c7fa;
+    --accent-purple: #d7aefb;
+    --border-color: #444746;
+    
+    /* Indicadores Estado */
+    --success: #6dd58c; /* Verde pastel */
+    --warning: #fdc365; /* Naranja pastel */
+    --danger: #f28b82;  /* Rojo pastel */
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    overflow: hidden; /* Evita scroll global */
+}
+
+/* HEADER */
+header {
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.8rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    box-sizing: border-box;
+}
+
+.logo-area { display: flex; align-items: center; gap: 12px; }
+.logo-icon { font-size: 1.5rem; }
+h1 { margin: 0; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; }
+.subtitle { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+
+.status-badge {
+    background: rgba(109, 213, 140, 0.1);
+    color: var(--success);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(109, 213, 140, 0.2);
+    display: flex; align-items: center; gap: 8px;
+}
+.status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+
+/* GRID LAYOUT */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    grid-template-rows: 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 60px);
+    box-sizing: border-box;
+}
+
+/* CARDS */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card h3 {
+    margin: 0 0 15px 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* AI CARD SPECIAL STYLES */
+.ai-card {
+    border: 1px solid var(--accent-purple);
+    background: linear-gradient(145deg, rgba(215, 174, 251, 0.05) 0%, rgba(30, 31, 32, 1) 100%);
+}
+.ai-header h3 { color: var(--accent-purple); display: flex; align-items: center; gap: 8px; }
+.ai-insight { margin-bottom: 12px; }
+.ai-insight label { font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+.ai-text { font-size: 0.9rem; font-weight: 400; line-height: 1.4; }
+
+/* DATOS TYPOGRAPHY */
+.value-huge { font-family: 'JetBrains Mono', monospace; font-size: 3.5rem; font-weight: 700; color: var(--text-primary); line-height: 1; margin-bottom: 5px; }
+.value-large { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin: 5px 0; }
+.value-highlight { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--accent-blue); }
+.value-sub { color: var(--text-secondary); font-size: 0.85rem; }
+
+.data-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+.data-row:last-child { border-bottom: none; margin-bottom: 0; }
+
+/* LISTAS SCROLL */
+.scrolling-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
+/* Scrollbar fina oscura */
+.scrolling-list::-webkit-scrollbar { width: 4px; }
+.scrolling-list::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+.scrolling-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+    font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.incident-badge {
+    background: rgba(242, 139, 130, 0.2);
+    color: var(--danger);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-right: 8px;
+    border: 1px solid var(--danger);
+}
+
+/* MAPA */
+#map-container {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+#map { height: 100%; width: 100%; background-color: #1a1a1a; }
+
+/* LEYENDA DEL MAPA (OSCURA) */
+.legend {
+    background: rgba(30, 31, 32, 0.9);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    backdrop-filter: blur(5px);
+}
+.legend i { width: 10px; height: 10px; float: left; margin-right: 8px; margin-top: 3px; border-radius: 50%; }
+
+/* COLORES DINÁMICOS */
+.color-good { color: var(--success); }
+.color-mod { color: var(--warning); }
+.color-bad { color: var(--danger); }
