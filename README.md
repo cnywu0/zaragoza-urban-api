@@ -86,7 +86,7 @@ El sistema utiliza un dashboard interactivo con mapa georreferenciado, actualiza
 
 ### Dashboard Principal
 
-![Dashboard Principal](./docs/images/dashboard-main.png)
+![Dashboard Principal](./public/images/dashboard-main.png)
 
 **Características visibles:**
 - Panel izquierdo con meteorología, calidad del aire y polen
